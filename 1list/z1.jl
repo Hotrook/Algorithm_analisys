@@ -1,5 +1,5 @@
-using StatsBase
-n = 1000
+using Gadfly
+n = 100000
 probes = 1000
 
 function leader_firstscenario(n::Integer)
@@ -28,9 +28,8 @@ end
 results = Array{Int64}(probes)
 
 for i = 1:probes
-    results[ i ] = leader_firstscenario( 1000 )
+    results[ i ] = leader_firstscenario( n )
 end
 
-h = fit( Histrogram, results )
 
-println(h)
+Gadfly.plot( x = results, Geom.histogram )
