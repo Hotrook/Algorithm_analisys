@@ -54,7 +54,6 @@ function find_max(state::Vector{Int}, dict::Dict)
     end
 
     max_steps = 0
-    cache = state
 
     for i = 1:n
         if legal_move(state, i, n)
@@ -94,18 +93,18 @@ function check_all_configurations(n::Int)
     while it < bound
         if it % 1000 == 0
             x = it / bound
-            @printf("%3.5f \r", x )
+            @printf("\r%3.5f", x )
         end
         steps = find_max(conf, dict)
         max_steps = max(max_steps, steps)
-        # dict[ conf ] = max_steps
         next_configuration(conf, n)
         it += 1
     end
 
+    println()
     println("Max found steps: $max_steps")
 end
 
 
 dict = Dict()
-@time check_all_configurations(3)
+@time check_all_configurations(7)
