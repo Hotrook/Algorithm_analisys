@@ -101,6 +101,7 @@ z = [
 ]
 
 add_edges(g, z)
+plot(g)
 
 
 check_all_configurations(g)

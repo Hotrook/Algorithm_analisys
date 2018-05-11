@@ -44,8 +44,8 @@ end
 function find_max(state::Vector{Int}, dict::Dict)
     n = size(state)[1]
 
-    steps = get(dict, string(state), -1 )
-    if steps >= 0
+    steps::UInt8 = get(dict, string(state), 127 )
+    if steps != 127
         return steps
     end
 
@@ -53,7 +53,8 @@ function find_max(state::Vector{Int}, dict::Dict)
         return 0
     end
 
-    max_steps = 0
+    max_steps::UInt8 = 0
+    original = 0
 
     for i = 1:n
         if legal_move(state, i, n)
@@ -64,8 +65,49 @@ function find_max(state::Vector{Int}, dict::Dict)
         end
     end
 
-    dict[ string(state) ] = max_steps+1
-    return max_steps+1
+    dict[ string(state) ] = max_steps+convert(UInt8,1)
+    return max_steps+convert(UInt8,1)
+end
+
+function transform(state::Vector{Int}, n::Int)
+    n1 = n+1
+    x = 1
+    sum = 1
+
+    for i = n:-1:1
+        sum += x*state[i]
+        x *= n1
+    end
+
+    return sum
+end
+
+function find_max(state::Vector{Int}, tab::Vector{UInt8})
+    n = size(state)[1]
+
+    steps::UInt8 = tab[transform(state, n)]
+    if steps != 127
+        return steps
+    end
+
+    if legal(state, n)
+        return 0
+    end
+
+    max_steps::UInt8 = 0
+    original = 0
+
+    for i = 1:n
+        if legal_move(state, i, n)
+            original = do_move(state, i, n)
+            steps = find_max(state, tab)
+            max_steps = max(max_steps, steps)
+            state[ i ] = original
+        end
+    end
+
+    tab[ transform(state, n) ] = max_steps+convert(UInt8,1)
+    return max_steps+convert(UInt8,1)
 end
 
 function decrease(state::Vector{Int}, pos::Int, n::Int)
@@ -74,7 +116,7 @@ function decrease(state::Vector{Int}, pos::Int, n::Int)
     elseif state[pos] > 0
         state[ pos ] -= 1
     else
-        state[ pos ] = n
+        state[ pos ] = n-1
         decrease(state, pos-1, n)
     end
 end
@@ -87,9 +129,11 @@ function check_all_configurations(n::Int)
     conf = fill(n, n)
     bound = (n+1) ^ n
     it = 0
-    max_steps = 0
+    max_steps::UInt8 = 0
+    steps::UInt8 = 0
 
 
+    println(bound)
     while it < bound
         if it % 1000 == 0
             x = it / bound
@@ -106,5 +150,35 @@ function check_all_configurations(n::Int)
 end
 
 
-dict = Dict()
-@time check_all_configurations(7)
+function check_all_configurations(n::Int, tab::Vector{UInt8})
+    conf = fill(n-1, n)
+    bound = (n+1) ^ n
+    it = 0
+    max_steps::UInt8 = 0
+    steps::UInt8 = 0
+
+
+    println(bound)
+    while it < bound
+        if it % 1000 == 0
+            x = it / bound
+            @printf("\r%3.5f", x )
+        end
+        steps = find_max(conf, tab)
+        max_steps = max(max_steps, steps)
+        next_configuration(conf, n)
+        it += 1
+    end
+
+    println()
+    println("Max found steps: $max_steps")
+end
+
+n = 3
+
+# dict = Dict{String, UInt8}()
+# sizehint!(dict, (n+1) ^ n)
+# @time check_all_configurations(n)
+x = convert(UInt8, 127)
+@time tab = fill( x, (n+1)^n )
+@time check_all_configurations(n, tab)
