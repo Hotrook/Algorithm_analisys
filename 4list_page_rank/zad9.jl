@@ -2,7 +2,7 @@ include("pagerank.jl")
 include("visualize.jl")
 
 r = 32
-alpha = 0.85
+alpha = 0.5
 input = [
 1 0 0 0 0 0;
 0 0 1 0 1 0;

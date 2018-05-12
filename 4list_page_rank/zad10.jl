@@ -33,20 +33,20 @@ print("\t")
 println(stationary_dist[1, 4])
 
 
-epsilons = [0.1, 0.01, 0.001]
+eps = [0.1, 0.01, 0.001]
 min_t = [0, 0, 0]
 
 for i = 1:100
     _, sd = pagerank(pr_matrix, i, alpha)
     for k = 1:3
         temp, _ = findmax([abs(sd[1, j] - stationary_dist[1, j]) for j = 1:n])
-        if temp < epsilons[ k ] &&  min_t[ k ] == 0
+        if temp < eps[ k ] &&  min_t[ k ] == 0
             min_t[ k ] = i
         end
     end
 end
 
 println("d) Minimalne t dla epsilonów")
-for i = 1:n
-    println("\t$(epsilon[i]): $(min_t[i])")
+for i = 1:3
+    println("\t$(eps[i]): $(min_t[i])")
 end
