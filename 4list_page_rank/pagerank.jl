@@ -42,3 +42,24 @@ function pagerank(pr_matrix::Matrix, k::Int, alpha::Float64)
     values, stationary_dist = find_stationary_distribution(pr_matrix, k)
     return values, stationary_dist
 end
+
+function find_stationary_distribution(M::Matrix, r::Int, init::Vector)
+    (n, m) = size(M)
+    values = fill(0.0, n, r)
+    vec = transpose(init)
+
+    for i = 1:r
+        vec *= M
+        for j in 1:n
+            values[j, i] = vec[ j ]
+        end
+    end
+
+    return values, vec
+end
+
+function pagerank(pr_matrix::Matrix, k::Int, alpha::Float64, init::Vector)
+    # pr_matrix = create_pagerank_matrix(M, alpha)
+    values, stationary_dist = find_stationary_distribution(pr_matrix, k, init)
+    return values, stationary_dist
+end

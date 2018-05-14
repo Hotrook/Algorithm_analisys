@@ -36,10 +36,12 @@ println(stationary_dist[1, 4])
 eps = [0.1, 0.01, 0.001]
 min_t = [0, 0, 0]
 
+mn = [mean([pr_matrix[j, i] for j = 1:n]) for i = 1:n]
 for i = 1:100
-    _, sd = pagerank(pr_matrix, i, alpha)
+    _, sd = pagerank(pr_matrix, i, alpha, mn)
+    P = pr_matrix^i
     for k = 1:3
-        temp, _ = findmax([abs(sd[1, j] - stationary_dist[1, j]) for j = 1:n])
+        temp, _ = findmax([abs(P[1, j] - sd[j]) for j = 1:n])
         if temp < eps[ k ] &&  min_t[ k ] == 0
             min_t[ k ] = i
         end
