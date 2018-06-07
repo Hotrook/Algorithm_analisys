@@ -1,14 +1,14 @@
 import Base.isless
 
-@enum Task_type start stop
-type Task
+@enum Client_type start stop
+type Client
     in_time::Float64
     out_time::Float64
     que::Int
-    op_type::Task_type
+    op_type::Client_type
 end
 
-function isless(first::Task, second::Task)
+function isless(first::Client, second::Client)
     first.out_time < second.out_time
 end
 
@@ -25,9 +25,9 @@ function carry_experiment(n::Int, t::Int, lambda::Float64, get_random::Function)
     sum_times = 0.0
 
     for i = 1:n
-        ques[ i ] = Queue(Task)
+        ques[ i ] = Queue(Client)
         in_time = poiss_dist(lambda)
-        enqueue!(pq, Task(in_time, in_time, i, start), in_time)
+        enqueue!(pq, Client(in_time, in_time, i, start), in_time)
     end
 
     while current_time < t
@@ -38,7 +38,7 @@ function carry_experiment(n::Int, t::Int, lambda::Float64, get_random::Function)
         if current_task.op_type == start
             q = current_task.que
             next_int_time = poiss_dist(lambda) + current_time
-            enqueue!(pq, Task(next_int_time, next_int_time, q, start), next_int_time)
+            enqueue!(pq, Client(next_int_time, next_int_time, q, start), next_int_time)
 
             if isempty(ques[q])
                 finish_time = get_random() + current_time

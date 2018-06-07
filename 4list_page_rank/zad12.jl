@@ -1,7 +1,7 @@
 include("experiment_simulator.jl")
 
-l = 0.2
-u = 0.3
+l = 0.3
+u = 0.2
 n = 30
 probes = 10
 max_time = 10000000
